@@ -9,6 +9,7 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
 }
 
 $role = $_SESSION['role'];
+
 ?>
 
 <!DOCTYPE html>
@@ -18,21 +19,42 @@ $role = $_SESSION['role'];
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Data Jemaat - Korps Makassar</title>
 </head>
-<body class="bg-gray-100 flex">
+<body class="bg-gray-100 lg:flex overflow-x-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-slate-800 h-screen sticky top-0 text-white p-6 shadow-xl">
-        <h1 class="text-2xl font-bold mb-10 text-orange-400">Korps Makassar</h1>
-        <nav class="space-y-4">
+   <div class="lg:hidden bg-slate-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
+        <h1 class="text-xl font-bold text-orange-400">Korps Makassar</h1>
+        <button id="hamburgerBtn" class="p-2 focus:outline-none hover:bg-slate-700 rounded transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-800 text-white p-6 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-0">
+        
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-2xl font-bold text-orange-400">Korps Makassar</h1>
+            <button id="closeBtn" class="lg:hidden text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <nav class="space-y-2">
             <a href="dashboard.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Dashboard</a>
-            <a href="jemaat.php" class="block py-2.5 px-4 rounded bg-slate-700">Data Jemaat</a>
-            <a href="sekolah_minggu.php" class="block py-2.5 px-4 rounded bg-slate-700">Data Sekolah Minggu</a>
-            <a href="logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900 mt-20 transition">Logout</a>
+            <a href="jemaat.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Data Jemaat</a>
+            <a href="sekolah_minggu.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Sekolah Minggu</a>
+            <div class="pt-10">
+                <a href="logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/50 rounded transition border border-red-900/20">Logout</a>
+            </div>
         </nav>
     </aside>
 
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity lg:hidden"></div>
+
     <!-- Main Content -->
-    <main class="flex-1 p-8">
+    <main class="flex-1 w-full p-4 md:p-8">
         <h2 class="text-3xl font-semibold text-gray-800 mb-8">Manajemen Jemaat</h2>
 
         <!-- Form Input Jemaat (Hanya muncul untuk Admin & Sekretaris) -->
@@ -135,6 +157,27 @@ $role = $_SESSION['role'];
                 }
             }
         }
+
+    // sidebar
+    const sidebar = document.getElementById('sidebar');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const overlay = document.getElementById('overlay');
+
+    // Fungsi Buka Sidebar
+    hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    });
+
+    // Fungsi Tutup Sidebar
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
     </script>
 </body>
 </html>

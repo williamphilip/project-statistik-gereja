@@ -1,0 +1,9 @@
+/* Agar smooth saat sidebar muncul */
+#sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Memastikan kanvas grafik responsif */
+canvas {
+  max-width: 100% !important;
+}

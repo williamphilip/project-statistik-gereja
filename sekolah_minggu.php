@@ -2,7 +2,11 @@
 session_start();
 include 'koneksi.php';
 
-if($_SESSION['status'] != "login") header("location:login.php");
+if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
+    header("location:login.php");
+    exit();
+}
+
 $role = $_SESSION['role'];
 ?>
 
@@ -13,15 +17,40 @@ $role = $_SESSION['role'];
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Sekolah Minggu - Korps Makassar</title>
 </head>
-<body class="bg-gray-100 flex">
-    <main class="flex-1 p-8">
-        <h2 class="text-3xl font-semibold text-gray-800 mb-8">Data Anak Sekolah Minggu</h2>
-        <a href="dashboard.php" class="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition border border-slate-300 font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+<body class="bg-gray-100 lg:flex overflow-x-hidden">
+    <div class="lg:hidden bg-slate-800 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
+        <h1 class="text-xl font-bold text-orange-400">Korps Makassar</h1>
+        <button id="hamburgerBtn" class="p-2 focus:outline-none hover:bg-slate-700 rounded transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-            Kembali ke Dashboard
-        </a>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-800 text-white p-6 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-0">
+        
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-2xl font-bold text-orange-400">Korps Makassar</h1>
+            <button id="closeBtn" class="lg:hidden text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <nav class="space-y-2">
+            <a href="dashboard.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Dashboard</a>
+            <a href="jemaat.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Data Jemaat</a>
+            <a href="sekolah_minggu.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Sekolah Minggu</a>
+            <div class="pt-10">
+                <a href="logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/50 rounded transition border border-red-900/20">Logout</a>
+            </div>
+        </nav>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity lg:hidden"></div>
+    <main class="flex-1 w-full p-4 md:p-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-8">Data Anak Sekolah Minggu</h2>
         <!-- Form Input Anak Baru -->
         <div class="bg-white p-6 rounded-xl shadow-md mb-8 gap-4">
             <h3 class="text-xl font-bold mb-4 text-gray-700">Tambah Anak</h3>
@@ -39,12 +68,17 @@ $role = $_SESSION['role'];
 
         <!-- Tabel Data Anak -->
         <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-          <?php if(isset($_GET['pesan']) && $_GET['pesan'] == "hapus_berhasil"): ?>
-              <div class="bg-red-100 text-red-600 p-3 rounded-lg text-sm mb-4 border border-red-200">
-                  Data anak telah berhasil dihapus dari sistem.
-              </div>
-          <?php endif; ?>
-            <table class="w-full text-left border-collapse">
+            <?php if(isset($_GET['pesan']) && $_GET['pesan'] == "hapus_berhasil"): ?>
+                <div class="bg-red-100 text-red-600 p-3 rounded-lg text-sm mb-4 border border-red-200">
+                    Data anak telah berhasil dihapus dari sistem.
+                </div>
+            <?php endif; ?>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-700">Daftar Anak</h3>
+                <input type="text" id="cariASM" onkeyup="filterTabelASM()" placeholder="Cari nama atau orang tua..." 
+                    class="border p-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-yellow-400 w-64 shadow-sm">
+            </div>
+            <table class="w-full text-left border-collapse" id="tabelDataASM">
                 <thead>
                     <tr class="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
                         <th class="p-3 border-b">Nama</th>
@@ -65,7 +99,9 @@ $role = $_SESSION['role'];
                         <td class="p-3"><?= $umur ?> Tahun</td>
                         <td class="p-3"><?= $d['nama_orang_tua'] ?></td>
                         <td class="p-3">
-                            <a href="hapus_asm.php?id=<?= $d['id'] ?>" class="text-red-500 hover:underline" onclick="return confirm('Hapus data ini?')">Hapus</a>
+                            <?php if($role == 'admin'): ?>
+                                <a href="hapus_asm.php?id=<?= $d['id'] ?>" class="text-red-500 hover:underline" onclick="return confirm('Hapus data ini?')">Hapus</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php } ?>
@@ -73,5 +109,52 @@ $role = $_SESSION['role'];
             </table>
         </div>
     </main>
+    
+    <script>
+    function filterTabelASM() {
+        let input = document.getElementById("cariASM");
+        let filter = input.value.toUpperCase();
+        let table = document.getElementById("tabelDataASM");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                // Kita cek Kolom Nama (indeks 0) dan Kolom Orang Tua (indeks 2)
+                let tdNama = tr[i].getElementsByTagName("td")[0];
+                let tdOrtu = tr[i].getElementsByTagName("td")[2];
+                
+                if (tdNama || tdOrtu) {
+                    let txtNama = tdNama.textContent || tdNama.innerText;
+                    let txtOrtu = tdOrtu.textContent || tdOrtu.innerText;
+                    
+                    if (txtNama.toUpperCase().indexOf(filter) > -1 || txtOrtu.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+    // sidebar
+    const sidebar = document.getElementById('sidebar');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const overlay = document.getElementById('overlay');
+
+    // Fungsi Buka Sidebar
+    hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    });
+
+    // Fungsi Tutup Sidebar
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    </script>
 </body>
 </html>
