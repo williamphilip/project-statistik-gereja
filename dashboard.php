@@ -158,7 +158,7 @@ if (empty($labels)) {
                     <option value="Ibadah PKW">Ibadah PKW</option>
                     <option value="Ibadah Kesucian Mingguan">Ibadah Kesucian Mingguan</option>
                     <option value="Ibadah GPS">Ibadah GPS</option>
-                    <option value="Ibadah Sekolah Minggu">Sekolah Minggu</option>
+                    <option value="Sekolah Minggu">Sekolah Minggu</option>
                 </select>
                 
                 <input type="date" name="tgl" class="border p-2 rounded-lg w-full focus:border-orange-500 outline-none" required>
