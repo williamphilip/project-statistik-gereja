@@ -7,9 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tgl          = mysqli_real_escape_string($conn, $_POST['tgl']);
     $hadir        = mysqli_real_escape_string($conn, $_POST['hadir']);
     $kolekte      = mysqli_real_escape_string($conn, $_POST['kolekte']);
+    $perpuluhan = $_POST['perpuluhan'] ?? 0; // Jika kosong set ke 0
+    $syukur     = $_POST['syukur'] ?? 0;
 
-    $query = "INSERT INTO laporan_mingguan (tanggal_ibadah, jenis_ibadah, jumlah_kehadiran, total_kolekte) 
-            VALUES ('$tgl', '$jenis_ibadah', '$hadir', '$kolekte')";
+    $query = "INSERT INTO laporan_mingguan (tanggal_ibadah, jenis_ibadah, jumlah_kehadiran, total_kolekte, perpuluhan, syukur) 
+            VALUES ('$tgl', '$jenis_ibadah', '$hadir', '$kolekte', '$perpuluhan', '$syukur')";
 
     if (mysqli_query($conn, $query)) {
         header("location:dashboard.php?pesan=input_berhasil");

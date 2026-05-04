@@ -166,6 +166,9 @@ if (empty($labels)) {
                 
                 <!-- Input Kolekte hanya bisa diisi role tertentu jika diinginkan, di sini kita buka untuk semua penginput -->
                 <input type="number" name="kolekte" placeholder="Kolekte (Rp)" class="border p-2 rounded-lg w-full focus:border-orange-500 outline-none" required>
+
+                <input type="number" name="perpuluhan" placeholder="Perpuluhan (Rp)" class="border p-2 rounded-lg outline-none">
+                <input type="number" name="syukur" placeholder="Syukur (Rp)" class="border p-2 rounded-lg outline-none">
                 
                 <button type="submit" class="bg-orange-500 text-white font-bold p-2 rounded-lg hover:bg-orange-600 transition shadow-md">
                     Simpan

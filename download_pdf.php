@@ -47,6 +47,30 @@ $html = '
     .font-bold { font-weight: bold; }
     .total-section { background-color: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; margin-top: 20px; }
     .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 5px; }
+
+    /* Menentukan area footer agar muncul di setiap halaman */
+    .footer { 
+        position: fixed; 
+        bottom: -20px; 
+        left: 0; 
+        right: 0; 
+        height: 50px; 
+        text-align: center; 
+        font-size: 8px; 
+        color: #94a3b8; 
+        border-top: 1px solid #e2e8f0; 
+        padding-top: 5px; 
+    }
+
+    /* Membuat penomoran otomatis */
+    .pagenum:before { 
+        content: counter(page); 
+    }
+
+    <thead>
+    <tr style="page-break-inside: avoid; page-break-after: auto;">
+        </tr>
+    </thead>
 </style>
 
 <div class="header">
@@ -75,9 +99,12 @@ $html = '
 </div>';
 
 // Pengelompokan berdasarkan Jenis Ibadah
-$jenis_ibadah_q = mysqli_query($conn, "SELECT DISTINCT jenis_ibadah FROM laporan_mingguan");
 $grand_total_kolekte = 0;
+$grand_total_perpuluhan = 0; 
+$grand_total_syukur = 0;
 $grand_total_hadir = 0;
+
+$jenis_ibadah_q = mysqli_query($conn, "SELECT DISTINCT jenis_ibadah FROM laporan_mingguan");
 
 while($j = mysqli_fetch_assoc($jenis_ibadah_q)) {
     $current_ibadah = $j['jenis_ibadah'];
@@ -85,56 +112,98 @@ while($j = mysqli_fetch_assoc($jenis_ibadah_q)) {
     $html .= '<table>
                 <thead>
                     <tr>
-                        <th width="25%">Tanggal</th>
-                        <th width="40%">Jenis Ibadah</th>
-                        <th width="15%" class="text-right">Kehadiran</th>
-                        <th width="20%" class="text-right">Kolekte</th>
+                        <th width="15%">Tanggal</th>
+                        <th width="10%" class="text-right">Hadir</th>
+                        <th width="18%" class="text-right">Kolekte</th>
+                        <th width="18%" class="text-right">Perpuluhan</th>
+                        <th width="18%" class="text-right">Syukur</th>
+                        <th width="21%" class="text-right">Total</th>
                     </tr>
                 </thead>
                 <tbody>';
     
     $detail_q = mysqli_query($conn, "SELECT * FROM laporan_mingguan WHERE jenis_ibadah = '$current_ibadah' ORDER BY tanggal_ibadah ASC");
     $sub_kolekte = 0;
+    $sub_perpuluhan = 0;
+    $sub_syukur = 0;
     $i = 0;
-    
+
     while($row = mysqli_fetch_assoc($detail_q)) {
+        // Hitung Total per Baris
+        $total_baris = $row['total_kolekte'] + $row['perpuluhan'] + $row['syukur'];
+        
         $bg_class = ($i % 2 == 0) ? '' : 'row-even';
         $html .= '<tr class="'.$bg_class.'">
-                    <td>' . date('d F Y', strtotime($row['tanggal_ibadah'])) . '</td>
-                    <td>' . $row['jenis_ibadah'] . '</td>
+                    <td>' . date('d/m/y', strtotime($row['tanggal_ibadah'])) . '</td>
                     <td class="text-right">' . number_format($row['jumlah_kehadiran']) . '</td>
-                    <td class="text-right">Rp ' . number_format($row['total_kolekte'], 0, ',', '.') . '</td>
+                    <td class="text-right">' . number_format($row['total_kolekte'], 0, ',', '.') . '</td>
+                    <td class="text-right">' . number_format($row['perpuluhan'], 0, ',', '.') . '</td>
+                    <td class="text-right">' . number_format($row['syukur'], 0, ',', '.') . '</td>
+                    <td class="text-right font-bold">' . number_format($total_baris, 0, ',', '.') . '</td>
                 </tr>';
+        
+        // Tambahkan ke Subtotal
         $sub_kolekte += $row['total_kolekte'];
+        $sub_perpuluhan += $row['perpuluhan'];
+        $sub_syukur += $row['syukur'];
+        
         $grand_total_hadir += $row['jumlah_kehadiran'];
         $i++;
     }
-    
-    $html .= '<tr class="font-bold">
-                <td colspan="3" class="text-right">Subtotal ' . $current_ibadah . '</td>
-                <td class="text-right">Rp ' . number_format($sub_kolekte, 0, ',', '.') . '</td>
+
+    $sub_total_ibadah = $sub_kolekte + $sub_perpuluhan + $sub_syukur;
+
+    $html .= '<tr class="font-bold" style="background-color: #f8fafc;">
+                <td colspan="2" class="text-right">Subtotal</td>
+                <td class="text-right">' . number_format($sub_kolekte, 0, ',', '.') . '</td>
+                <td class="text-right">' . number_format($sub_perpuluhan, 0, ',', '.') . '</td>
+                <td class="text-right">' . number_format($sub_syukur, 0, ',', '.') . '</td>
+                <td class="text-right">Rp ' . number_format($sub_total_ibadah, 0, ',', '.') . '</td>
             </tr>
             </tbody>
         </table>';
+
+    // Tambahkan ke Grand Total Akhir
     $grand_total_kolekte += $sub_kolekte;
+    $grand_total_perpuluhan += $sub_perpuluhan;
+    $grand_total_syukur += $sub_syukur;
+
 }
+
+// Hitung Grand Total Keseluruhan
+$grand_total_penerimaan = $grand_total_kolekte + $grand_total_perpuluhan + $grand_total_syukur;
 
 $html .= '
 <div class="total-section">
     <table style="border:none; margin-bottom:0;">
         <tr>
-            <td style="border:none;" class="font-bold">TOTAL KEHADIRAN SELURUH IBADAH</td>
+            <td style="border:none;" class="font-bold">TOTAL KEHADIRAN</td>
             <td style="border:none;" class="text-right font-bold">' . number_format($grand_total_hadir) . ' Orang</td>
         </tr>
         <tr>
-            <td style="border:none; font-size: 14px;" class="font-bold">TOTAL PENERIMAAN KOLEKTE</td>
-            <td style="border:none; font-size: 14px; color: #166534;" class="text-right font-bold">Rp ' . number_format($grand_total_kolekte, 0, ',', '.') . '</td>
+            <td style="border:none;">Total Kolekte Umum</td>
+            <td style="border:none;" class="text-right">Rp ' . number_format($grand_total_kolekte, 0, ',', '.') . '</td>
+        </tr>
+        <tr>
+            <td style="border:none;">Total Persembahan Perpuluhan</td>
+            <td style="border:none;" class="text-right">Rp ' . number_format($grand_total_perpuluhan, 0, ',', '.') . '</td>
+        </tr>
+        <tr>
+            <td style="border:none;">Total Persembahan Syukur</td>
+            <td style="border:none;" class="text-right">Rp ' . number_format($grand_total_syukur, 0, ',', '.') . '</td>
+        </tr>
+        <tr style="font-size: 14px; color: #166534;">
+            <td style="border:none; padding-top:10px;" class="font-bold">TOTAL PENERIMAAN KESELURUHAN</td>
+            <td style="border:none; padding-top:10px;" class="text-right font-bold">Rp ' . number_format($grand_total_penerimaan, 0, ',', '.') . '</td>
         </tr>
     </table>
 </div>
 
+
 <div class="footer">
-    Halaman 1 | Gereja Bala Keselamatan Korps Makassar | Dicetak oleh: ' . $_SESSION['username'] . '
+    Gereja Bala Keselamatan Korps Makassar | 
+    Halaman <span class="pagenum"></span> | 
+    Dicetak oleh: ' . ($_SESSION['username'] ?? 'Admin') . '
 </div>';
 
 $dompdf->loadHtml($html);
