@@ -82,6 +82,7 @@ $role = $_SESSION['role'];
                 <thead>
                     <tr class="bg-gray-50 text-gray-600 font-bold uppercase text-xs">
                         <th class="p-3 border-b">Nama</th>
+                        <th class="p-3 border-b">Tanggal Lahir</th>
                         <th class="p-3 border-b">Umur</th>
                         <th class="p-3 border-b">Orang Tua</th>
                         <th class="p-3 border-b">Aksi</th>
@@ -93,9 +94,18 @@ $role = $_SESSION['role'];
                     while($d = mysqli_fetch_array($q)){
                         $lahir = new DateTime($d['tanggal_lahir']);
                         $umur = (new DateTime())->diff($lahir)->y;
+
+                        if(!empty($d['tanggal_lahir']) && $d['tanggal_lahir'] != '0000-00-00'){
+                            $lahir = new DateTime($d['tanggal_lahir']);
+                            $umur = (new DateTime())->diff($lahir)->y . " Tahun";
+
+                            // Format Tanggal Lahir untuk ditampilkan (Contoh: 15 Jan 2018)
+                            $tgl_indo = date('d F Y', strtotime($d['tanggal_lahir']));
+                        }
                     ?>
                     <tr class="border-b hover:bg-gray-50">
                         <td class="p-3 font-medium"><?= $d['nama_lengkap'] ?> (<?= $d['jenis_kelamin'] ?>)</td>
+                        <td class="p-3 text-gray-600"><?= $tgl_indo ?></td>
                         <td class="p-3"><?= $umur ?> Tahun</td>
                         <td class="p-3"><?= $d['nama_orang_tua'] ?></td>
                         <td class="p-3">
@@ -115,18 +125,20 @@ $role = $_SESSION['role'];
         let input = document.getElementById("cariASM");
         let filter = input.value.toUpperCase();
         let table = document.getElementById("tabelDataASM");
-            let tr = table.getElementsByTagName("tr");
+        let tr = table.getElementsByTagName("tr");
 
             for (let i = 1; i < tr.length; i++) {
                 // Kita cek Kolom Nama (indeks 0) dan Kolom Orang Tua (indeks 2)
                 let tdNama = tr[i].getElementsByTagName("td")[0];
-                let tdOrtu = tr[i].getElementsByTagName("td")[2];
+                let tdTgl  = tr[i].getElementsByTagName("td")[1];
+                let tdOrtu = tr[i].getElementsByTagName("td")[3];
                 
-                if (tdNama || tdOrtu) {
+                if (tdNama || tdTgl || tdOrtu) {
                     let txtNama = tdNama.textContent || tdNama.innerText;
+                    let txtTgl  = tdTgl.textContent || tdTgl.innerText;
                     let txtOrtu = tdOrtu.textContent || tdOrtu.innerText;
                     
-                    if (txtNama.toUpperCase().indexOf(filter) > -1 || txtOrtu.toUpperCase().indexOf(filter) > -1) {
+                    if (txtNama.toUpperCase().indexOf(filter) > -1 || txtTgl.toUpperCase().indexOf(filter) > -1 || txtOrtu.toUpperCase().indexOf(filter) > -1) {
                         tr[i].style.display = "";
                     } else {
                         tr[i].style.display = "none";

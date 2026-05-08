@@ -5,6 +5,12 @@ include 'koneksi.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+$filter_ibadah = isset($_GET['filter_ibadah']) ? mysqli_real_escape_string($conn, $_GET['filter_ibadah']) : 'Semua';
+
+$where_clause = ($filter_ibadah == 'Semua' || $filter_ibadah == '') ? "" : "WHERE jenis_ibadah LIKE '%$filter_ibadah%'";
+
+
+
 // --- 1. AMBIL DATA JUMLAH DARI DATABASE ---
 // Ambil total jemaat dewasa
 $q_jemaat = mysqli_query($conn, "SELECT COUNT(*) as total FROM jemaat");
@@ -75,6 +81,7 @@ $html = '
 
 <div class="header">
     <h1>LAPORAN STATISTIK & KEUANGAN GEREJA</h1>
+    <p>Kategori: ' . ($filter_ibadah == "Semua" ? "Seluruh Ibadah" : $filter_ibadah) . '</p>
     <p>Periode Laporan: ' . date('F Y') . '</p>
     <p>Dicetak pada: ' . date('d/m/Y') . ' </p>
 </div>
@@ -104,7 +111,7 @@ $grand_total_perpuluhan = 0;
 $grand_total_syukur = 0;
 $grand_total_hadir = 0;
 
-$jenis_ibadah_q = mysqli_query($conn, "SELECT DISTINCT jenis_ibadah FROM laporan_mingguan");
+$jenis_ibadah_q = mysqli_query($conn, "SELECT DISTINCT jenis_ibadah FROM laporan_mingguan $where_clause");
 
 while($j = mysqli_fetch_assoc($jenis_ibadah_q)) {
     $current_ibadah = $j['jenis_ibadah'];

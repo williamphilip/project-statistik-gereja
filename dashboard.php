@@ -100,11 +100,11 @@ if (empty($labels)) {
 
         <!-- Tombol Download PDF Baru -->
         <div class="flex item-center gap-4">
-            <a href="download_pdf.php" target="_blank" class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-md transition font-medium">
+            <a href="download_pdf.php?filter_ibadah=<?= $filter_ibadah ?>" id="btnCetak" target="_blank" class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-md transition font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Cetak Laporan PDF
+                Cetak Laporan PDF(<?= $filter_ibadah ?>)
             </a>
         </div>
 
@@ -118,7 +118,7 @@ if (empty($labels)) {
                     <option value="Ibadah Tebusan" <?= $filter_ibadah == 'Ibadah Tebusan' ? 'selected' : '' ?>>Ibadah Tebusan</option>
                     <option value="Ibadah PKP" <?= $filter_ibadah == 'Ibadah PKP' ? 'selected' : '' ?>>Ibadah PKP</option>
                     <option value="Ibadah PKW" <?= $filter_ibadah == 'Ibadah PKW' ? 'selected' : '' ?>>Ibadah PKW</option>
-                    <option value="Ibadah Kesucian Mingguan" <?= $filter_ibadah == 'Ibadah Kesucian Mingguan' ? 'selected' : '' ?>>Ibadah Kesucian Mingguan</option>
+                    <option value="Ibadah Keluarga" <?= $filter_ibadah == 'Ibadah Keluarga' ? 'selected' : '' ?>>Ibadah Keluarga</option>
                     <option value="Ibadah GPS" <?= $filter_ibadah == 'Ibadah GPS' ? 'selected' : '' ?>>Ibadah GPS</option>
                     <option value="Sekolah Minggu" <?= $filter_ibadah == 'Sekolah Minggu' ? 'selected' : '' ?>>Sekolah Minggu</option>
                 </select>
@@ -156,7 +156,7 @@ if (empty($labels)) {
                     <option value="Ibadah Tebusan">Ibadah Tebusan</option>
                     <option value="Ibadah PKP">Ibadah PKP</option>
                     <option value="Ibadah PKW">Ibadah PKW</option>
-                    <option value="Ibadah Kesucian Mingguan">Ibadah Kesucian Mingguan</option>
+                    <option value="Ibadah Keluarga">Ibadah Keluarga</option>
                     <option value="Ibadah GPS">Ibadah GPS</option>
                     <option value="Sekolah Minggu">Sekolah Minggu</option>
                 </select>

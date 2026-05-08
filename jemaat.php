@@ -112,13 +112,20 @@ $role = $_SESSION['role'];
                     </thead>
                     <tbody>
                         <?php
+                        $no = 1;
                         $query = mysqli_query($conn, "SELECT * FROM jemaat ORDER BY nama_lengkap ASC");
                         while($d = mysqli_fetch_array($query)){
+                            $tgl_lahir_tampil = "-";
+
+                            if(!empty($d['tanggal_lahir']) && $d['tanggal_lahir'] != '0000-00-00'){
+                                // Format Tanggal Lahir: 05 May 2026
+                                $tgl_lahir_tampil = date('d M Y', strtotime($d['tanggal_lahir']));
+                            }
                         ?>
                         <tr class="border-b hover:bg-gray-50 transition">
                             <td class="p-3 font-medium text-gray-800"><?php echo $d['nama_lengkap']; ?></td>
                             <td class="p-3 text-gray-600"><?php echo $d['jenis_kelamin']; ?></td>
-                            <td class="p-3 text-gray-600"><?php echo $d['tanggal_lahir']; ?></td>
+                            <td class="p-3 text-gray-600"><?php echo $tgl_lahir_tampil; ?></td>
                             <td class="p-3 text-gray-600"><?php echo $d['wilayah']; ?></td>
                             <td class="p-3">
                                 <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold"><?php echo $d['status']; ?></span>
@@ -146,14 +153,25 @@ $role = $_SESSION['role'];
             let tr = table.getElementsByTagName("tr");
 
             for (let i = 1; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    let txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
+                let tdNama = tr[i].getElementsByTagName("td")[0];
+                let tdTgl = tr[i].getElementsByTagName("td")[2];
+                let tdStatus = tr[i].getElementsByTagName("td")[3];
+                let tdWil = tr[i].getElementsByTagName("td")[4];
+
+                if (tdNama || tdTgl || tdWil) {
+                    let txtNama = tdNama.textContent || tdNama.innerText;
+                    let txtTgl  = tdTgl.textContent || tdTgl.innerText;
+                    let txtWil  = tdWil.textContent || tdWil.innerText;
+                    
+                        if(
+                            txtNama.toUpperCase().indexOf(filter) > -1 || 
+                            txtTgl.toUpperCase().indexOf(filter) > -1 || 
+                            txtWil.toUpperCase().indexOf(filter) > -1
+                        ) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
                 }
             }
         }
