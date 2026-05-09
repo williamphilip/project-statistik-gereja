@@ -109,7 +109,7 @@ $role = $_SESSION['role'];
                         <td class="p-3"><?= $umur ?> Tahun</td>
                         <td class="p-3"><?= $d['nama_orang_tua'] ?></td>
                         <td class="p-3">
-                            <?php if($role == 'admin'): ?>
+                            <?php if($role == 'admin' || $role == 'sekretaris'): ?>
                                 <a href="hapus_asm.php?id=<?= $d['id'] ?>" class="text-red-500 hover:underline" onclick="return confirm('Hapus data ini?')">Hapus</a>
                             <?php endif; ?>
                         </td>
