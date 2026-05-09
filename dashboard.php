@@ -125,22 +125,22 @@ if (empty($labels)) {
             </form>
         </div>
 
-        <!-- Grid Grafik dengan Hak Akses -->
-        <div class="grid grid-cols-1 <?= ($role == 'admin' || $role == 'bendahara') ? 'lg:grid-cols-2' : '' ?> gap-6 mb-8">
+        <!-- Grid Grafik -->
+        <div class="grid grid-cols-1 gap-6 mb-8">
             
-            <!-- Grafik Kehadiran (Semua Role Bisa Lihat) -->
+            <!-- Grafik Kehadiran  -->
             <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-500">
                 <h3 class="text-lg font-bold mb-4 text-gray-700">Tren Kehadiran Jemaat</h3>
                 <canvas id="kehadiranChart" height="150"></canvas>
             </div>
 
-            <!-- Grafik Kolekte (Hanya Admin & Bendahara) -->
-            <?php if ($role == 'admin' || $role == 'bendahara') : ?>
+            <!-- Grafik Kolekte -->
             <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
-                <h3 class="text-lg font-bold mb-4 text-gray-700">Statistik Kolekte (Rupiah)</h3>
-                <canvas id="kolekteChart" height="150"></canvas>
+                <h3 class="text-lg font-bold mb-4 text-gray-700 text-center">Statistik Kolekte</h3>
+                <div class="relative h-[250px] w-full">
+                    <canvas id="kolekteChart"></canvas>
+                </div>
             </div>
-            <?php endif; ?>
             
         </div>
 
