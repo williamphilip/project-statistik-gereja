@@ -126,17 +126,20 @@ if (empty($labels)) {
         </div>
 
         <!-- Grid Grafik -->
-        <div class="grid grid-cols-1 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             
             <!-- Grafik Kehadiran  -->
             <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-500">
-                <h3 class="text-lg font-bold mb-4 text-gray-700">Tren Kehadiran Jemaat</h3>
-                <canvas id="kehadiranChart" height="150"></canvas>
+                <h3 class="text-sm font-bold mb-4 text-gray-500 uppercase tracking-wider text-center">Tren Kehadiran Jemaat</h3>
+                <!-- h-[250px] menjaga agar tinggi chart tetap rapi saat bersebelahan -->
+                <div class="relative h-[250px] w-full">
+                    <canvas id="kehadiranChart"></canvas>
+                </div>
             </div>
 
             <!-- Grafik Kolekte -->
             <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
-                <h3 class="text-lg font-bold mb-4 text-gray-700 text-center">Statistik Kolekte</h3>
+                <h3 class="text-sm font-bold mb-4 text-gray-500 uppercase tracking-wider text-center">Statistik Kolekte</h3>
                 <div class="relative h-[250px] w-full">
                     <canvas id="kolekteChart"></canvas>
                 </div>
@@ -202,6 +205,12 @@ if (empty($labels)) {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom', // Memindahkan legenda ke bawah agar grafik lebih luas
+                        }
+                    },
                     scales: { y: { beginAtZero: true } }
                 }
             });

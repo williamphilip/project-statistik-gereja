@@ -107,7 +107,7 @@ $role = $_SESSION['role'];
                             <th class="p-3 border-b">Tanggal Lahir</th>
                             <th class="p-3 border-b">Wilayah</th>
                             <th class="p-3 border-b">Status</th>
-                            <?php if ($role == 'admin') : ?><th class="p-3 border-b text-center">Aksi</th><?php endif; ?>
+                            <?php if ($role == 'admin' || $role == 'sekretaris') : ?><th class="p-3 border-b text-center">Aksi</th><?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,7 +130,7 @@ $role = $_SESSION['role'];
                             <td class="p-3">
                                 <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold"><?php echo $d['status']; ?></span>
                             </td>
-                            <?php if ($role == 'admin') : ?>
+                            <?php if ($role == 'admin' || $role == 'sekretaris') : ?>
                             <td class="p-3 text-center space-x-2">
                                 <a href="edit_jemaat.php?id=<?php echo $d['id']; ?>" class="text-blue-500 hover:underline">Edit</a>
                                 <a href="hapus_jemaat.php?id=<?php echo $d['id']; ?>" class="text-red-500 hover:underline" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
