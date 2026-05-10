@@ -7,6 +7,14 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     exit();
 }
 
+if ($_SESSION['role'] == 'bendahara') {
+    echo "<script>
+            alert('Akses Ditolak! Bagian Bendahara tidak diizinkan mengakses data Sekolah Minggu.');
+            window.location.href='dashboard.php';
+        </script>";
+    exit();
+}
+
 $role = $_SESSION['role'];
 ?>
 
@@ -41,7 +49,10 @@ $role = $_SESSION['role'];
         <nav class="space-y-2">
             <a href="dashboard.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Dashboard</a>
             <a href="jemaat.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Data Jemaat</a>
-            <a href="sekolah_minggu.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Sekolah Minggu</a>
+            <!-- Menu Sekolah Minggu HANYA muncul jika BUKAN bendahara -->
+            <?php if ($role != 'bendahara') : ?>
+                <a href="sekolah_minggu.php" class="block py-2.5 px-4 rounded hover:bg-slate-700 transition">Sekolah Minggu</a>
+            <?php endif; ?>
             <div class="pt-10">
                 <a href="logout.php" class="block py-2.5 px-4 text-red-400 hover:bg-red-900/50 rounded transition border border-red-900/20">Logout</a>
             </div>
